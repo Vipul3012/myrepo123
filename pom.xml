@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.7.5</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.peloton.migration</groupId>
+	<artifactId>apparelmigration-productprice-service</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>apparelmigration-service</name>
+	<description>Extraction of product price data from DataHub and move to commercetool</description>
+	<properties>
+		<java.version>11</java.version>
+		<camel.version>3.19.0</camel.version>
+		<commercetools.version>LATEST</commercetools.version>
+		<junit.version>5.3.2</junit.version>
+		<aws.java.sdk.version>2.20.62</aws.java.sdk.version>
+		<sonar.sources>src/main</sonar.sources>
+		<sonar.tests>src/test</sonar.tests>
+		<!-- Below property indicates the pattern of the test suite -->
+		<runSuite>**/*Suite.class</runSuite>
+		<!-- Sonar-JaCoCo properties -->
+		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+		<sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
+		<sonar.language>java</sonar.language>
+	</properties>
+	<dependencyManagement>
+	    <dependencies>
+	      <dependency>
+	        <groupId>software.amazon.awssdk</groupId>
+	        <artifactId>bom</artifactId>
+	        <version>${aws.java.sdk.version}</version>
+	        <type>pom</type>
+	        <scope>import</scope>
+	      </dependency>
+	    </dependencies>
+	 </dependencyManagement>
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.camel.springboot</groupId>
+			<artifactId>camel-spring-boot-starter</artifactId>
+			<version>${camel.version}</version>
+		</dependency>
+			<dependency>
+		<groupId>org.apache.camel.springboot</groupId>
+		<artifactId>camel-aws2-s3-starter</artifactId>
+		<version>${camel.version}</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-s3 -->
+	<dependency>
+		<groupId>com.amazonaws</groupId>
+		<artifactId>aws-java-sdk-s3</artifactId>
+		<!-- TODO: can we have version in Properties?  -->
+		<version>1.12.371</version>
+	</dependency>
+	<dependency>
+	  <groupId>org.apache.camel.springboot</groupId>
+	  <artifactId>camel-kafka-starter</artifactId>
+	  <version>${camel.version}</version>
+	  <!-- use the same version as your Camel core version -->
+	</dependency>
+	<dependency>
+	
+
+		<groupId>software.amazon.awssdk</groupId>
+		<artifactId>s3</artifactId>
+		<version>2.19.3</version>
+		<!-- TODO: can we have version in Properties?  -->
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.camel</groupId>
+		    <artifactId>camel-http</artifactId>
+		    <version>${camel.version}</version>
+		</dependency>	
+		<dependency>
+    		<groupId>org.apache.camel</groupId>
+    		<artifactId>camel-jackson</artifactId>
+    		<version>${camel.version}</version>
+		</dependency>
+		<dependency>
+		  <groupId>org.apache.camel</groupId>
+		  <artifactId>camel-bindy</artifactId>
+		  <version>${camel.version}</version>
+		</dependency>
+		<dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-test-spring-junit5</artifactId>
+            <version>${camel.version}</version>
+            <scope>test</scope>
+        </dependency>
+		<dependency>
+    		<groupId>org.apache.camel</groupId>
+    		<artifactId>camel-validator</artifactId>
+    		<version>${camel.version}</version>
+		</dependency>
+		<!-- commercetools dependencies  -->
+		<dependency>
+	      <groupId>com.commercetools.sdk</groupId>
+	      <artifactId>commercetools-http-client</artifactId>
+	       <version>${commercetools.version}</version>
+	    </dependency>
+	    <dependency>
+	      <groupId>com.commercetools.sdk</groupId>
+	      <artifactId>commercetools-sdk-java-api</artifactId>
+	      <version>${commercetools.version}</version>
+	    </dependency>
+     <!-- End commercetools dependencies  -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+			<exclusions>
+		    <exclusion>
+		      <groupId>junit</groupId>
+		      <artifactId>junit</artifactId>
+		    </exclusion>
+  			</exclusions>
+		</dependency>
+		<dependency>
+		  <groupId>org.junit.jupiter</groupId>
+		  <artifactId>junit-jupiter-api</artifactId>
+		  <scope>test</scope>
+		</dependency>
+		<dependency>
+	  		<groupId>org.junit.jupiter</groupId>
+	  		<artifactId>junit-jupiter-engine</artifactId>
+	  		<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator -->
+		<dependency>
+		    <groupId>org.hibernate.validator</groupId>
+		    <artifactId>hibernate-validator</artifactId>
+		    <version>6.2.5.Final</version>
+		</dependency>
+		<dependency>
+  			<groupId>org.apache.camel.springboot</groupId>
+  			<artifactId>camel-micrometer-starter</artifactId>
+  			<version>${camel.version}</version>
+		</dependency>
+		<dependency>
+    		<groupId>org.springframework.boot</groupId>
+    		<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+    		<groupId>org.springframework.boot</groupId>
+    		<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>secretsmanager</artifactId>
+        </dependency>
+         <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>sts</artifactId>
+            </dependency>
+	    <!-- TODO- Regions dependency might not be needed, remove after testing -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>regions</artifactId>
+        </dependency>
+        <dependency>
+		    <groupId>com.google.code.gson</groupId>
+		    <artifactId>gson</artifactId>
+		    <version>2.10.1</version>
+		</dependency>
+<dependency>
+    <groupId>com.amazonaws</groupId>
+    <artifactId>aws-java-sdk-secretsmanager</artifactId>
+    <version>1.12.389</version>
+</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<!-- Below plugin ensures the execution of test cases during maven build-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<includes>
+						<include>${runSuite}</include>
+					</includes>
+				</configuration>
+			</plugin>
+			<!-- Sonar-JaCoCo integration plugin -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<!-- TODO: can we have version in properties ? -->
+				<version>0.7.9</version>
+				<configuration>
+					<destFile>${sonar.jacoco.reportPath}</destFile>
+					<append>true</append>
+				</configuration>
+				<executions>
+					<execution>
+						<id>agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<!-- check coverage during maven verify phase -->
+					<execution>
+					    <id>check</id>
+					    <goals>
+					        <goal>check</goal>
+					    </goals>
+					    <configuration>
+					        <rules>
+					            <rule>
+					                <element>BUNDLE</element>
+					                <limits>
+					                    <limit>
+					                        <counter>LINE</counter>
+					                        <value>COVEREDRATIO</value>
+					                        <minimum>0.75</minimum>
+					                    </limit>
+					                </limits>
+					            </rule>
+					        </rules>
+					    </configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
